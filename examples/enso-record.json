@@ -1,0 +1,8 @@
+{
+ "indicator": "ENSO_PHASE",
+ "reference": "2026-ASO",
+ "values": { "phase": 1, "intensity": 4 },
+ "classes": { "phase": "0 neutral, 1 El Nino, 2 La Nina", "intensity": "0 to 4" },
+ "source": "NOAA/CPC Oceanic Nino Index (public); classes derived by the publisher",
+ "issued_at": "2026-11-16T19:40:00-03:00"
+}

@@ -1,0 +1,9 @@
+{
+ "id": "example-freight-mandate-v1",
+ "_note": "ILLUSTRATIVE numbers only. Write your own mandate before the agent runs, freeze it, and review changes as diffs.",
+ "network": "testnet",
+ "asset": { "currency": "TEST", "issuer": "<your test issuer address>" },
+ "limits": { "perPayment": 1000, "perDay": 2000, "perCounterpartyPerDay": 1000, "maxPaymentsPerDay": 3, "perWeek": 5000, "perYear": 100000 },
+ "unitCap": { "perUnit": 30, "unit": "tonne" },
+ "counterparty": { "credential": { "issuer": "<your credential issuer address>", "type": "CARRIER", "maxValidityDays": 90 } }
+}

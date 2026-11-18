@@ -1,0 +1,9 @@
+{
+ "indicator": "RAIN_CLASS_EX",
+ "reference": "5218805",
+ "values": { "class": 2 },
+ "classes": { "class": "1 below normal, 2 near normal, 3 above normal" },
+ "source": "EXAMPLE ONLY (fictitious value; a real publisher would derive it from NASA POWER, public)",
+ "issued_at": "2026-11-16T19:40:00-03:00",
+ "example": true
+}
