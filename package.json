@@ -1,6 +1,6 @@
 {
   "name": "aeternum-agro-agent-kit",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Open kit for agents that read agro data, decide under a mandate and pay on the XRP Ledger (testnet examples).",
   "license": "Apache-2.0",
   "type": "module",
@@ -9,7 +9,9 @@
     "./mandate": "./src/mandate/index.js",
     "./access": "./src/access/index.js",
     "./access/stdio": "./src/access/stdio.js",
-    "./settlement": "./src/settlement/index.js"
+    "./settlement": "./src/settlement/index.js",
+    "./multichain": "./src/multichain/index.js",
+    "./receipt": "./src/receipt/index.js"
   },
   "scripts": { "test": "node --test test/*.test.js" },
   "dependencies": { "xrpl": "5.3.0" },

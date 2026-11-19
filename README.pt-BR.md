@@ -1,9 +1,9 @@
 # AETERNUM Agro Agent Kit para a XRP Ledger
 
 *Peças abertas para agentes que leem dado agro, decidem dentro de um mandato escrito e pagam na XRP Ledger.*
-Por **AETERNUM AURUM PARTNERS** · Apache-2.0 · versão 0.1.0 · [English](README.md)
+Por **AETERNUM AURUM PARTNERS** · Apache-2.0 · versão 0.3.0 · [English](README.md)
 
-> **Situação:** 0.1, exemplos só na Testnet. Nada aqui é recomendação de investimento. Os exemplos usam dado público (NOAA/CPC, NASA POWER) e valores fictícios marcados como exemplo.
+> **Situação:** 0.3, exemplos só na Testnet. Nada aqui é recomendação de investimento. Os exemplos usam dado público (NOAA/CPC, NASA POWER) e valores fictícios marcados como exemplo.
 
 ## Por quê
 Um agente que movimenta dinheiro no comércio agrícola precisa de três coisas antes de pagar alguém:
@@ -21,6 +21,8 @@ O kit entrega essas três peças e um jeito de outros agentes consultarem e paga
 | 2 | `mandate` | Formato aberto de regras de gasto e um motor que responde **PAGA** ou **RECUSA** com o motivo; lê a credencial da contraparte na rede; monta o pagamento | Credentials, tokens emitidos |
 | 3 | `quant/` (Python) | Métodos para agentes que fazem hedge e liquidam: razão de cobertura de variância mínima com teste fora da amostra, risco cambial pelo prazo de liquidação, custos de carregamento e de trânsito, protocolo de pré-registro; só séries públicas (veja [`quant/README.md`](quant/README.md)) | — |
 | 4 | `access` | **Servidor MCP** só de leitura dos registros de classe e **pagamento por consulta** (no estilo x402) liquidado na XRPL | Payments, memos |
+| 5 | `multichain` | **Só leitura:** o mesmo registro de classe na Stellar Testnet (dados de 1 byte na conta, memo hash) e na XDC Apothem (`eth_call`), conferido contra o mesmo hash do registro; sem chave, sem dependência nova | — (Stellar, XDC) |
+| 6 | `receipt` | **Domínio verificado** (Credential + Permissioned Domain) e **recibo de lote** como MPT com RequireAuth (1 unidade = 1 saca; metadado XLS-89 curto com o hash do arquivo completo do lote); a filiação é conferida na rede antes de a emissora autorizar um titular | Credentials, Permissioned Domains, MPT |
 
 ## Começo rápido
 Precisa de Node.js 20 ou mais novo.
@@ -63,6 +65,18 @@ KIT_XRPL_SEED=<seed do agente> KIT_X402_PAYTO=<recebedor> node examples/x402-age
 ```
 **O x402 na XRPL é uma adaptação não padrão.** O x402 nasceu em redes EVM, com autorização assinada e um "facilitador". Aqui o agente paga primeiro na XRPL com o id da fatura no memo e repete o pedido com o cabeçalho `X-PAYMENT`, que leva o hash da transação. O servidor confere lendo a rede: validada, `tesSUCCESS`, destino, valor e token **entregues**, memo, sem reuso, dentro do prazo. O servidor não guarda chave.
 
+### Módulo 5: um registro, três redes (só leitura)
+```
+node examples/read-multichain.js GABV43A5IUUNNYW6RX7N7KDA7K5UBBHBWAB3RDMSENCRAJ7AXH5ZQUS5   2d2343816732db250ef55ea42e64a1d342d53276781a01d705dabfccd9125103   0x816919326C8f51E9BE93df4De4D023689368a26b ENSO_FASE ENSO_FASE,ENSO_INT [record.json]
+```
+Stellar: cada classe é um dado de 1 byte na conta, e a transação que publica leva um memo do tipo `hash` = sha256 do registro canônico (o mesmo hash do URI do oráculo na XRPL). XDC: um contrato mínimo lido por `eth_call` (`registros(bytes32)`, seletor `0x762849cc`); um último campo opcional leva o mesmo hash do registro. `verifyAcrossLedgers(record, read)` diz cada diferença.
+
+### Módulo 6: domínio verificado e recibo de lote (sem envio)
+```
+node examples/receipt-dry-run.js <endereço da emissora> <endereço do titular>   # monta as 7 transações; não assina nada
+```
+Na Testnet (nov/2026), a emissão de MPT com `DomainID` foi recusada (`temDISABLED`); por isso o recibo usa o **plano B**: a emissora autoriza cada titular, um a um, depois de `isMember()` ler a credencial dele na rede. Nos dois planos quem trava é a rede (`RequireAuth`): quem não é membro e tenta receber o MPT leva `tecNO_AUTH`. **Recibo de lote real em token é questão jurídica em cada país; este módulo é um padrão de demonstração.**
+
 ## No ar na XRPL Testnet (17/11/2026)
 Feito com este método pela AETERNUM AURUM PARTNERS. Tudo na Testnet, com token de teste sem valor:
 - oráculo de classe com a fase do ENSO e uma classe de risco de exemplo (`RISCO_EX_…`), cada um com o hash do registro no URI;
@@ -80,8 +94,8 @@ Os hashes estão em [`docs/testnet-evidence.md`](docs/testnet-evidence.md).
 - não foi auditado para a Mainnet. Usar na Mainnet é decisão e responsabilidade de quem usa.
 
 ## Próximos passos
-- 0.2: escrow liberado só quando a classe do oráculo e a credencial batem; Permissioned Domains; um lote fictício de café como recibo MPT com o hash dos metadados (XLS-89).
-- A liquidação condicionada (`settlement`, módulo 2b) entrou na 0.2: escrow com condição PREIMAGE-SHA-256, liberado só pelo agente que decide.
+- Feito na 0.2: liquidação condicionada (`settlement`, módulo 2b): escrow com condição PREIMAGE-SHA-256, liberado só pelo agente que decide, quando a classe do oráculo e a credencial batem.
+- Feito na 0.3: leitura do mesmo oráculo de classe nas testnets da Stellar e da XDC (Módulo 5); domínio verificado e recibo de lote em MPT (Módulo 6).
 
 ## Licença
 Apache License 2.0: veja [LICENSE](LICENSE) e [NOTICE](NOTICE). © 2026 AETERNUM AURUM PARTNERS.
