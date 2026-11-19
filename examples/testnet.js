@@ -6,3 +6,6 @@ export function exampleNetwork(name = process.env.KIT_XRPL_NETWORK ?? "testnet")
   if (!url) throw new Error(`examples run only on ${Object.keys(NETWORKS).join(" or ")}`);
   return url;
 }
+// Module 5 (read-only): the Stellar and XDC test networks used by the examples
+export const STELLAR_TESTNET = "https://horizon-testnet.stellar.org";
+export const XDC_APOTHEM = Object.freeze({ rpc: "https://rpc.apothem.network", chainId: 51 });
